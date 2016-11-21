@@ -13,15 +13,15 @@ import java.util.Properties;
 public class Config extends FileHandler {
 
     public Properties props;
+    private boolean hasRead;
     private List<ArrayPair> defaultConfigurations;
-    private boolean loadedProperly;
 
     /**
      * Basic constructor
      */
     public Config() {
         this.props = new Properties();
-        this.loadedProperly = false;
+        this.hasRead = false;
 
         loadDefaults();
     } //end of Constructor
@@ -35,7 +35,7 @@ public class Config extends FileHandler {
         super(context);
 
         this.props = new Properties();
-        this.loadedProperly = false;
+        this.hasRead = false;
 
         loadDefaults();
     } //end of constructor
@@ -61,7 +61,9 @@ public class Config extends FileHandler {
      * @return
      */
     public boolean read() {
-        Message.info("Config class attempting to process properties.");
+        Message.debug("Config class attempting to process properties.");
+        this.hasRead = true;
+
         boolean readOkay = true;
 
         //get file configurations
@@ -87,8 +89,8 @@ public class Config extends FileHandler {
             }
         } //end of loop
 
-        if (readOkay) Message.success("Config file loaded correctly!");
-        else Message.warning("Config file may have not loaded correctly");
+        if (readOkay) Message.debug("Config file loaded correctly!");
+        else Message.debug("Config file may have not loaded correctly");
         return readOkay;
     } //end of read()
 
@@ -97,7 +99,7 @@ public class Config extends FileHandler {
      */
     public void viewProperties() {
         //send all the properties to the console
-        Message.info("Listing all properties in the info file\n---------------------------------------------");
+        Message.general("Listing all properties in the info file\n---------------------------------------------");
         this.props.list(System.out);
         Message.general("---------------------------------------------");
     } //end of viewProperties()
@@ -148,8 +150,15 @@ public class Config extends FileHandler {
      * @return
      */
     protected String getProperty(String key) {
-
-        return this.props.getProperty(key);
+        if (!this.hasRead) {
+            Message.warning("You have to call read() before trying to read properties.");
+        } else if (this.props.getProperty(key) != null) {
+            return this.props.getProperty(key);
+        } else {
+            Message.warning("Property: \'" + key + "\' not found");
+            return "Property: \'" + key + "\' not found";
+        }
+        return "";
     } //end of getProperty()
 
     /**

@@ -24,26 +24,8 @@ public class MainActivity extends AppCompatActivity {
      * initialize any needed aspects
      */
     private void initialize() {
-        Message.info("Starting program.");
-
-        //start a new file handler class instance
-        FileHandler fh = new FileHandler(this);
-
-        //verify files and directories exists as well as verifying data is not corrupt or missing information
-        if (!fh.verify()) {
-            //something went wrong verifying
-            Message.error("Closing application.");
-            this.destroy();
-        }
-
         //set up and event listeners needed for this activity
         this.eventListeners();
-
-        //get configuration options
-        Config config = new Config();
-        config.read();
-        config.viewProperties();
-        //Message.success(config.getProperty("store_password_char_limit"));
     }
 
     /**

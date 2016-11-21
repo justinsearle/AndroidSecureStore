@@ -47,13 +47,19 @@ public class FileHandler {
         boolean verified = true;
 
         //check required directories and files exist as well as verifying data integrity
-        if (!checkDirectories() && verified) verified = false;
-        if (!checkFiles() && verified) verified = false;
-        if (!checkData() && verified) verified = false;
+        if (!checkDirectories() && verified) {
+            verified = false;
+            Message.warning("Files handler could not verify directories.");
+        }
+        if (!checkFiles() && verified) {
+            verified = false;
+            Message.warning("Files handler could not verify files.");
+        }
+        if (!checkData() && verified) {
+            verified = false;
+            Message.warning("Files handler could not verify data.");
+        }
 
-        //show status of method to console
-        if (verified) Message.success("File handler verified files, directories and data.");
-        else Message.warning("Files handler could not verify files, directories and data.");
         return verified;
     } //end of verify()
 
@@ -61,7 +67,7 @@ public class FileHandler {
      * check that all needed directories exist
      */
     private boolean checkDirectories() {
-        Message.debug("Attemping to verify directores.");
+        Message.debug("Attemtping to verify directories.");
         boolean verified = true;
 
         try {
@@ -87,8 +93,8 @@ public class FileHandler {
         }
 
         //show status of method to console
-        if (verified) Message.success("File handler verified directories.");
-        else Message.error("File handler could not verify directories.");
+        if (verified) Message.debug("Verified directories.");
+        else Message.debug("Could not verify directories.");
         return verified;
     } //end of checkDirectories()
 
@@ -121,8 +127,8 @@ public class FileHandler {
         }
 
         //show status of method to console
-        if (verified) Message.success("File handler verified files.");
-        else Message.error("File handler could not verify files.");
+        if (verified) Message.debug("Verified files.");
+        else Message.debug("Could not verify files.");
         return verified;
     } //end of checkFiles()
 
@@ -130,7 +136,7 @@ public class FileHandler {
      * check the data is intact and not corrupted
      */
     private boolean checkData() {
-        Message.debug("File handler attemping to verify data.");
+        Message.debug("Attemping to verify data.");
         boolean verified = true;
 
         //open config file
@@ -154,8 +160,8 @@ public class FileHandler {
         }
 
         //show status of method to console
-        if (verified) Message.success("File handler successfully verified data.");
-        else Message.error("File handler could not verify data.");
+        if (verified) Message.debug("Verified data.");
+        else Message.debug("Could not verify data.");
         return verified;
     } //end of checkData()
 
@@ -196,8 +202,8 @@ public class FileHandler {
         }
 
         //show status of method to console
-        if (saved) Message.success("File handler saved the config file.");
-        else Message.error("File handler could not save the config file.");
+        if (saved) Message.debug("File handler saved the config file.");
+        else Message.debug("File handler could not save the config file.");
         return saved;
     } //end of setConfig()
 
