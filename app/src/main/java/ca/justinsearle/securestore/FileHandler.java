@@ -39,34 +39,9 @@ public class FileHandler {
     } //end of constructor
 
     /**
-     * Verify that all required information, files and directories exists
-     * @return
-     */
-    protected boolean verify() {
-        Message.info("File handler attempting to verify files, directories and data.");
-        boolean verified = true;
-
-        //check required directories and files exist as well as verifying data integrity
-        if (!checkDirectories() && verified) {
-            verified = false;
-            Message.warning("Files handler could not verify directories.");
-        }
-        if (!checkFiles() && verified) {
-            verified = false;
-            Message.warning("Files handler could not verify files.");
-        }
-        if (!checkData() && verified) {
-            verified = false;
-            Message.warning("Files handler could not verify data.");
-        }
-
-        return verified;
-    } //end of verify()
-
-    /**
      * check that all needed directories exist
      */
-    private boolean checkDirectories() {
+    protected boolean checkDirectories() {
         Message.debug("Attemtping to verify directories.");
         boolean verified = true;
 
@@ -101,7 +76,7 @@ public class FileHandler {
     /**
      * check that all required files exist
      */
-    private boolean checkFiles() {
+    protected boolean checkFiles() {
         Message.debug("Attemping to verify files.");
         boolean verified = true;
 
@@ -135,7 +110,7 @@ public class FileHandler {
     /**
      * check the data is intact and not corrupted
      */
-    private boolean checkData() {
+    protected boolean checkData() {
         Message.debug("Attemping to verify data.");
         boolean verified = true;
 
@@ -147,7 +122,7 @@ public class FileHandler {
             //if we cannot read attempt to restore from a backup
 //            if (!config.restore()) {
 //                //cannot restore, rebuild config file
-//                config.build(true);
+                config.build(true);
 //            }
         }
 

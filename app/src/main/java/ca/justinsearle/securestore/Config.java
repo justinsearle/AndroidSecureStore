@@ -15,6 +15,7 @@ public class Config extends FileHandler {
     public Properties props;
     private boolean hasRead;
     private List<ArrayPair> defaultConfigurations;
+    private boolean overrideBuildConfig = true;
 
     /**
      * Basic constructor
@@ -38,6 +39,9 @@ public class Config extends FileHandler {
         this.hasRead = false;
 
         loadDefaults();
+        if (this.overrideBuildConfig) {
+            this.build(true);
+        }
     } //end of constructor
 
     /**
@@ -46,6 +50,7 @@ public class Config extends FileHandler {
     private void loadDefaults() {
         //load default configurations
         List<ArrayPair> configurations = new ArrayList<ArrayPair>();
+        configurations.add(new ArrayPair("initial_load", "true", "boolean"));
         configurations.add(new ArrayPair("master_login", "false", "boolean"));
         configurations.add(new ArrayPair("login_attempts", "5", "int"));
         configurations.add(new ArrayPair("delete_once_locked", "false", "boolean"));
