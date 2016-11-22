@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -12,15 +15,17 @@ import android.widget.TextView;
  * This class handles all the functionality for the splash screen of secure store
  */
 
-public class Splash extends Activity {
+public class Splash extends AppCompatActivity {
 
-    /** Duration of wait time for the splash screen **/
     private final int SPLASH_DISPLAY_LENGTH = 3000;
     private int mProgressStatus = 0;
     private boolean initialLoad = false;
-
+    private boolean masterLogin = false;
     private ProgressBar mProgress;
     private TextView txtLoading;
+    private TextView txtInformation;
+    private Button btnNoMasterLogin;
+    private Button btnYesMasterLogin;
     private Config config;
 
     @Override
@@ -33,35 +38,48 @@ public class Splash extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
+        //find loading elements
+        this.mProgress = (ProgressBar) findViewById(R.id.progressBarLoading);
+        this.txtLoading = (TextView) findViewById(R.id.txtLoading);
+        this.txtInformation = (TextView) findViewById(R.id.txtInformation);
+        this.btnNoMasterLogin = (Button) findViewById(R.id.btnNoMasterLogin);
+        this.btnYesMasterLogin = (Button) findViewById(R.id.btnYesMasterLogin);
+
         //start loading data
         Splash.this.initialize();
 
-        //check if this is the first time the application is being loaded
-        if (!this.initialLoad) {
-            /* New Handler to start the next activity
-             * and close this Splash-Screen after some seconds.*/
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Intent mainIntent;
-                    Config config = new Config();
-                    config.read();
+        //setup event listeners
+        Splash.this.eventListeners();
 
-                    /* Create an Intent that will start the next Activity. */
-                    if (config.getProperty("master_login") == "false") {
-                        mainIntent = new Intent(Splash.this, Main2Activity.class);
-                    } else {
-                        mainIntent = new Intent(Splash.this, MainActivity.class);
-                    }
-
-                    //start new activity and finish splash screen activity
-                    Splash.this.startActivity(mainIntent);
-                    Splash.this.finish();
-                }
-            }, SPLASH_DISPLAY_LENGTH);
+        //decide path to be taken programmatically
+        if (this.initialLoad) {
+            //this is the initial load of the app
+            this.mProgress.setVisibility(View.GONE);
+            this.txtLoading.setText(getString(R.string.initial_load_header));
+            this.btnNoMasterLogin.setVisibility(View.VISIBLE);
+            this.btnYesMasterLogin.setVisibility(View.VISIBLE);
+            this.txtInformation.setText(getString(R.string.initial_load_message));
+            this.txtInformation.setVisibility(View.VISIBLE);
+        } else if (this.masterLogin) {
+            //master login screen
+            Intent mainIntent = new Intent(Splash.this, Main2Activity.class);
+            Splash.this.startActivity(mainIntent);
+            this.destroy();
         } else {
-            this.txtLoading.setText("Welcome to secure store");
+            //right to main activity
+            Intent mainIntent = new Intent(Splash.this, MainActivity.class);
+            Splash.this.startActivity(mainIntent);
+            this.destroy();
         }
+
+//        /* New Handler to start the next activity
+//         * and close this Splash-Screen after some seconds.*/
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }, SPLASH_DISPLAY_LENGTH);
     }
 
     /**
@@ -69,10 +87,6 @@ public class Splash extends Activity {
      */
     private void initialize() {
         Message.info("Starting program.");
-
-        //find loading elements
-        this.mProgress = (ProgressBar) findViewById(R.id.progressBarLoading);
-        this.txtLoading = (TextView) findViewById(R.id.txtLoading);
 
         //start a new file handler class instance
         FileHandler fh = new FileHandler(this);
@@ -89,7 +103,8 @@ public class Splash extends Activity {
         //verify files exists
         this.txtLoading.setText("Verifying files...");
         if (!fh.checkFiles()) {
-
+            this.txtLoading.setText("Could not verify files.");
+            this.destroy();
         }
         this.mProgressStatus = 50;
         this.mProgress.setProgress(this.mProgressStatus);
@@ -97,7 +112,8 @@ public class Splash extends Activity {
         //verify data is valid
         this.txtLoading.setText("Verifying data...");
         if (!fh.checkData()) {
-
+            this.txtLoading.setText("Could not verify data.");
+            this.destroy();
         }
         this.mProgressStatus = 75;
         this.mProgress.setProgress(this.mProgressStatus);
@@ -106,10 +122,30 @@ public class Splash extends Activity {
         this.txtLoading.setText("Loading settings...");
         this.config = new Config();
         this.config.read();
-        this.initialLoad = (config.getProperty("initial_load") == "true" ? true : false);
+        this.initialLoad = (this.config.getProperty("initial_load").equals("true") ? true : false);
+        this.masterLogin = (this.config.getProperty("master_login").equals("true") ? true : false);
         this.mProgressStatus = 100;
         this.mProgress.setProgress(this.mProgressStatus);
     } //end of initialize()
+
+    /**
+     *
+     */
+    public void eventListeners() {
+
+        //check which event listeners to add
+        if (this.initialLoad) {
+            //initial load
+//            this.mProgress.setOnClickListener(new OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    //when play is clicked show stop button and hide play button
+//                    playButton.setVisibility(View.GONE);
+//                    stopButton.setVisibility(View.VISIBLE);
+//                }
+//            });
+        }
+    } //end of eventListeners
 
     /**
      * Destroy the application and close properly

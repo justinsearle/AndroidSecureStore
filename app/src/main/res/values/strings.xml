@@ -2,4 +2,6 @@
     <string name="app_name">Secure Store</string>
     <string name="login_header">Secure Store Login</string>
     <string name="login_message">Login with your master username and password to review your secure store entries.</string>
+    <string name="initial_load_header">Welcome to Secure Store</string>
+    <string name="initial_load_message">Would you like you use a master login password to access all your information? This is highly reccomended.</string>
 </resources>
