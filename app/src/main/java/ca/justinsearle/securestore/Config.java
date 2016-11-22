@@ -39,9 +39,6 @@ public class Config extends FileHandler {
         this.hasRead = false;
 
         loadDefaults();
-        if (this.overrideBuildConfig) {
-            this.build(true);
-        }
     } //end of constructor
 
     /**
@@ -59,6 +56,10 @@ public class Config extends FileHandler {
         configurations.add(new ArrayPair("email_me_on_failed_attempts", "false", "boolean"));
 
         this.defaultConfigurations = configurations;
+
+        if (this.overrideBuildConfig) {
+            this.build(true);
+        }
     } //end of loadDefaults()
 
     /**
