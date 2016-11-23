@@ -57,9 +57,13 @@ public class EntryHandler extends FileHandler {
     } //end of viewEntries()
 
 
-    public String getMaster() {
-
-        return this.entries.get(0).getPassword();
+    public String getMasterPassword() {
+        for (int i = 0; i < this.entries.size(); i++) {
+            if (this.entries.get(i).getId() == Entry.getMasterId()) {
+                return this.entries.get(i).getPassword();
+            }
+        }
+        return "";
     }
 
     /**

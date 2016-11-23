@@ -73,7 +73,7 @@ public class Login extends AppCompatActivity {
                     Message.general("Password: " + password);
 
                     //verify that the given password is strong enough
-                    if (!Security.verifyPassword(password)) {
+                    if (!Security.verifyMasterPassword(password)) {
                         Message.error("Could not verify password.");
                         Login.this.txtLoginMessage.setText(getString(R.string.login_password_not_strong_enough));
                     } else {
@@ -104,7 +104,7 @@ public class Login extends AppCompatActivity {
 
                     entries.read();
 
-                    if (entries.getMaster().equals(password)) {
+                    if (entries.getMasterPassword().equals(password)) {
                         Message.success("LOGGED IN");
                         //move the entries activity
                         Intent mainIntent = new Intent(Login.this, MainActivity.class);

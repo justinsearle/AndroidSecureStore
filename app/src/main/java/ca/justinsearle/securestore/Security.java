@@ -16,8 +16,13 @@ public class Security {
 
     }
 
-    public static boolean verifyPassword(String password) {
+    protected static boolean verifyMasterPassword(String password) {
         boolean verified = true;
+
+        //check if password is long enough
+        if (password.length() < 8) {
+            verified = false;
+        }
 
         return verified;
     }
