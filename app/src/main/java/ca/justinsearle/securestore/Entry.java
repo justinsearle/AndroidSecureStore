@@ -4,9 +4,11 @@ package ca.justinsearle.securestore;
  * Created by Admin on 11/17/2016.
  */
 
-public class Entry {
+public class Entry implements java.io.Serializable {
 
+    private final int masterId = 999;
     private int entryID;
+    private int passwordLength;
     private String entryName;
     private String entryDescription;
     private String username;
@@ -20,11 +22,33 @@ public class Entry {
     private String other2;
     private String other3;
     private String other4;
+    private boolean isMaster = false;
     private boolean storePassword;
-    private int passwordLength;
     private boolean storePasswordLength;
 
     public Entry() {
+
+    }
+
+    public String getName() {
+        return this.entryName;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setup(int id, String name, String password, String description) {
+        if (id == this.masterId) {
+            this.isMaster = true;
+        }
+        this.entryID = id;
+        this.entryName = name;
+        this.password = password;
+        this.entryDescription = description;
+    }
+
+    public void getConstant(String master) {
 
     }
 }

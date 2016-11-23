@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class Splash extends AppCompatActivity {
 
-    private final int SPLASH_DISPLAY_LENGTH = 2000;
+    private final int SPLASH_DELAY_LENGTH = 2000;
     private int mProgressStatus = 0;
     private boolean initialLoad = false;
     private boolean masterLogin = false;
@@ -37,13 +37,17 @@ public class Splash extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash);
 
-        //find loading elements
+        //find splash screen elements
         this.mProgress = (ProgressBar) findViewById(R.id.progressBarLoading);
         this.txtLoading = (TextView) findViewById(R.id.txtLoading);
         this.txtInformation = (TextView) findViewById(R.id.txtInformation);
-        this.txtInformation.setVisibility(View.GONE);
         this.btnNoMasterLogin = (Button) findViewById(R.id.btnNoMasterLogin);
         this.btnYesMasterLogin = (Button) findViewById(R.id.btnYesMasterLogin);
+
+        //set default visibilites
+        this.txtInformation.setVisibility(View.GONE);
+        this.btnNoMasterLogin.setVisibility(View.GONE);
+        this.btnYesMasterLogin.setVisibility(View.GONE);
 
         //start loading bar
         Splash.this.setProgressBar(20);
@@ -54,7 +58,7 @@ public class Splash extends AppCompatActivity {
             public void run() {
                 Splash.this.initialize();
             }
-        }, SPLASH_DISPLAY_LENGTH);
+        }, SPLASH_DELAY_LENGTH);
     }
 
     /**
@@ -90,11 +94,12 @@ public class Splash extends AppCompatActivity {
         }
         Splash.this.setProgressBar(80);
 
-
         //read settings
         this.txtLoading.setText("Loading settings...");
-        this.config = new Config();
+        this.config = new Config(this);
+        //this.config.build(true);
         this.config.read();
+        config.viewProperties();
         this.initialLoad = (this.config.getProperty("initial_load").equals("true") ? true : false);
         this.masterLogin = (this.config.getProperty("master_login").equals("true") ? true : false);
         Splash.this.setProgressBar(100);
@@ -106,15 +111,15 @@ public class Splash extends AppCompatActivity {
         if (this.initialLoad) {
             //this is the initial load of the app
             this.txtLoading.setText(getString(R.string.initial_load_header));
+            this.txtInformation.setText(getString(R.string.initial_load_message));
             this.btnNoMasterLogin.setVisibility(View.VISIBLE);
             this.btnYesMasterLogin.setVisibility(View.VISIBLE);
-            this.txtInformation.setText(getString(R.string.initial_load_message));
             this.txtInformation.setVisibility(View.VISIBLE);
         } else if (this.masterLogin) {
             //master login screen
             Intent mainIntent = new Intent(Splash.this, Login.class);
             Splash.this.startActivity(mainIntent);
-            this.destroy();
+            Splash.this.destroy();
         } else {
             //right to main activity
             Intent mainIntent = new Intent(Splash.this, MainActivity.class);
@@ -124,32 +129,39 @@ public class Splash extends AppCompatActivity {
     } //end of initialize()
 
     /**
-     *
+     * Setup the splash screen event listeners
      */
     public void eventListeners() {
-
         //check which event listeners to add
         if (this.initialLoad) {
-            //initial load
+            /*
+             * initial load event listeners
+             */
             this.btnNoMasterLogin = (Button)findViewById(R.id.btnNoMasterLogin);
             this.btnNoMasterLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //user chose not setup a master account
                     Splash.this.config.setProperty("master_login", "false");
                     Splash.this.config.setProperty("initial_load", "false");
                     Splash.this.config.build(false);
+
+                    //move to the main activity screen
                     Intent mainIntent = new Intent(Splash.this, MainActivity.class);
                     Splash.this.startActivity(mainIntent);
                     Splash.this.destroy();
                 }
             });
+
             this.btnYesMasterLogin = (Button)findViewById(R.id.btnYesMasterLogin);
             this.btnYesMasterLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    //user chose to setup a master password
                     Splash.this.config.setProperty("master_login", "true");
-                    Splash.this.config.setProperty("initial_load", "false");
                     Splash.this.config.build(false);
+
+                    //movie to the login screen
                     Intent mainIntent = new Intent(Splash.this, Login.class);
                     Splash.this.startActivity(mainIntent);
                     Splash.this.destroy();
@@ -159,7 +171,7 @@ public class Splash extends AppCompatActivity {
     } //end of eventListeners
 
     /**
-     *
+     * Update the progress par with a given number / 100
      * @param progressStatus
      */
     public void setProgressBar(int progressStatus) {
@@ -171,7 +183,6 @@ public class Splash extends AppCompatActivity {
      * Destroy the application and close properly
      */
     private void destroy() {
-        //googles function to close applications properly
         Splash.this.finish();
     } //end of destroy()
 }

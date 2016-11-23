@@ -12,18 +12,14 @@ import java.util.Properties;
 
 public class Config extends FileHandler {
 
-    public Properties props;
-    private boolean hasRead;
+    public Properties props = new Properties();
     private List<ArrayPair> defaultConfigurations;
-    private boolean overrideBuildConfig = true;
+    private boolean hasRead = false;
 
     /**
      * Basic constructor
      */
     public Config() {
-        this.props = new Properties();
-        this.hasRead = false;
-
         loadDefaults();
     } //end of Constructor
 
@@ -34,9 +30,6 @@ public class Config extends FileHandler {
     public Config(Context context) {
         //load parent with context if needed
         super(context);
-
-        this.props = new Properties();
-        this.hasRead = false;
 
         loadDefaults();
     } //end of constructor
@@ -56,10 +49,6 @@ public class Config extends FileHandler {
         configurations.add(new ArrayPair("email_me_on_failed_attempts", "false", "boolean"));
 
         this.defaultConfigurations = configurations;
-
-        if (this.overrideBuildConfig) {
-            this.build(true);
-        }
     } //end of loadDefaults()
 
     /**

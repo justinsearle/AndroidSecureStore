@@ -2,23 +2,31 @@ package ca.justinsearle.securestore;
 
 import android.content.Context;
 
+import java.util.ArrayList;
+
 /**
  * Created by Admin on 11/15/2016.
  */
 
 public class EntryHandler extends FileHandler {
 
-    private int totalEntries;
+    private int totalEntries = 0;
+    private boolean hasRead = false;
+    private ArrayList<Entry> entries = new ArrayList<Entry>();
 
-
+    /**
+     * Basic constructor
+     */
     public EntryHandler() {
 
     } //end of constructor
 
+    /**
+     * Basic constructor
+     * @param context
+     */
     public EntryHandler(Context context) {
         super(context);
-
-
     } //end of constructor
 
     /**
@@ -29,12 +37,40 @@ public class EntryHandler extends FileHandler {
         Message.debug("EntryHandler class attempting to load entry file.");
         boolean readOkay = false;
 
-
+        this.entries = super.getEntryFile();
 
         //send status to console
         if (readOkay) Message.success("EntryHandler file loaded correctly!");
         else Message.warning("EntryHandler file may have not loaded correctly");
         return readOkay;
     } //end of read()
+
+    /**
+     * View all the entries
+     */
+    public void viewEntries() {
+        Message.info("Reading " + this.entries.size() + " entries.");
+
+        for (int i = 0; i < this.entries.size(); i++) {
+            Message.general(this.entries.get(i).getName());
+        }
+    } //end of viewEntries()
+
+
+    public String getMaster() {
+
+        return this.entries.get(0).getPassword();
+    }
+
+    /**
+     * Set the master password
+     * @param password
+     */
+    protected void setMaster(String password) {
+        Entry newEntry = new Entry();
+        newEntry.setup(999, "Master Account", password, "");
+        this.entries.add(newEntry);
+        super.setEntryFile(this.entries);
+    } //end of setMaster()
 
 } //end of EntryHandler class

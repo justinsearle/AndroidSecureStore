@@ -3,8 +3,13 @@ package ca.justinsearle.securestore;
 import android.content.Context;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -213,18 +218,19 @@ public class FileHandler {
      * Read the current configuration settings from a file
      * @return Properties
      */
-    protected Properties getEntryFile() {
+    protected ArrayList<Entry> getEntryFile() {
         Message.debug("Attempting to read from the config file.");
 
         //reference the entries file
-        File config = new File(this.context.getFilesDir(), "src/config.properties");
-        Properties props = new Properties();
+        ArrayList<Entry> entries = new ArrayList<Entry>();
 
         try {
             //attempt to load properties
-            FileReader reader = new FileReader(config);
-            props.load(reader);
-            reader.close();
+            FileInputStream fis = new FileInputStream( new File (this.context.getFilesDir(), "src/entries.dat"));
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            entries = (ArrayList<Entry>)ois.readObject();
+            ois.close();
+            fis.close();
             Message.success("File handler successfully read from the config file.");
         } catch (Exception e) {
             //catch exceptions
@@ -232,8 +238,32 @@ public class FileHandler {
             e.printStackTrace();
             Message.error("File handler failed to read from the config file.");
         }
+        return entries;
+    } //end of getEntryFile()
 
-        return props;
+    /**
+     * Read the current configuration settings from a file
+     * @return Properties
+     */
+    protected boolean setEntryFile(ArrayList<Entry> entries) {
+        Message.debug("Attempting to read from the config file.");
+        boolean saved = false;
+
+        try {
+            //attempt to load properties
+            FileOutputStream fos = new FileOutputStream(new File(this.context.getFilesDir(), "src/entries.dat"));
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(entries);
+            oos.close();
+            fos.close();
+            Message.success("File handler successfully read from the config file.");
+        } catch (Exception e) {
+            //catch exceptions
+            Message.exception(e.getMessage());
+            e.printStackTrace();
+            Message.error("File handler failed to read from the config file.");
+        }
+        return saved;
     } //end of getEntryFile()
 
 } //end of FileHandler class
