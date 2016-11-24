@@ -1,13 +1,16 @@
 package ca.justinsearle.securestore;
 
+import android.content.Context;
+import android.widget.Toast;
+
 /**
  * Created by Admin on 11/15/2016.
  */
 
 public class Message {
 
-    private boolean backlogMessages;
-    private boolean logMessages;
+    private static boolean backlogMessages;
+    private static boolean logMessages;
     private static boolean generalMessages = true;
     private static boolean infoMessages = true;
     private static boolean warningMessages = true;
@@ -15,13 +18,22 @@ public class Message {
     private static boolean errorMessages = true;
     private static boolean exceptionMessages = true;
     private static boolean debugMessages = false;
+    private static boolean toastMessages = true;
+
+    private Context context;
 
     /**
      * basic constructor
      */
     public Message() {
-        this.backlogMessages = false;
-        this.logMessages = false;
+
+    } //end of constructor
+
+    /**
+     * constructor with context
+     */
+    public Message(Context context) {
+        this.context = context;
     } //end of constructor
 
     /**
@@ -118,6 +130,17 @@ public class Message {
      */
     public static void debug(String msg) {
         if (debugMessages) System.out.println("DEBUG: "+ msg);
+    } //end of warning()
+
+    /**
+     * Send a exception message to the console
+     * @param msg
+     */
+    public void toast(String msg) {
+        if (toastMessages) {
+            System.out.println("TOAST: "+ msg);
+            Toast.makeText(this.context, msg, Toast.LENGTH_LONG).show();
+        }
     } //end of warning()
 
 } //end of Message class

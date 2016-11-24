@@ -1,6 +1,11 @@
 package ca.justinsearle.securestore;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,12 +18,22 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 /**
- * Created by Admin on 11/15/2016.
+ * Created by Justin on 11/15/2016.
+ *
+ * This class handles all the input and output of any data that the
+ * application needs or will need.
  */
+class FileHandler {
+    /**
+     * if saveToPrivate = true, the application will save to private storage
+     * else the application will save to sd card, mostly used for debugging
+     */
+    private static final boolean saveToPrivate = false;
 
-public class FileHandler {
-
-    private static Context context;
+    /**
+     * all the directories and files needed for the application,
+     * just add to this array of strings and it will create on load of the app
+     */
     private final String[] directories = {
             "backup/",
             "src/"
@@ -29,31 +44,56 @@ public class FileHandler {
             "src/log.txt"
     };
 
+    private Context context;
+
+    // Storage Permissions
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
     /**
-     *
+     * Constructors
      */
     public FileHandler() {
-
     }
 
-    /**
-     * constructor override with context
-     */
     public FileHandler(Context context) {
         this.context = context;
     } //end of constructor
+
+    public static void verifyStoragePermissions(Activity activity) {
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_EXTERNAL_STORAGE
+            );
+        }
+    }
 
     /**
      * check that all needed directories exist
      */
     protected boolean checkDirectories() {
-        Message.debug("Attemtping to verify directories.");
         boolean verified = true;
 
+        Message.debug("Attempting to verify directories.");
         try {
             //loop through needed directories
             for (String dir : this.directories) {
-                File directory = new File(this.context.getFilesDir(), dir);
+                //create reference
+                File directory;
+                if (this.saveToPrivate) {
+                    directory = new File(this.context.getFilesDir(), dir);
+                } else {
+                    directory = new File(Environment.getExternalStorageDirectory(), dir);
+                }
 
                 //check if directory exists
                 if (!directory.exists()) {
@@ -70,6 +110,7 @@ public class FileHandler {
         } catch (Exception e) {
             Message.exception(e.getMessage());
             e.printStackTrace();
+            verified = false;
         }
 
         //show status of method to console
@@ -82,13 +123,19 @@ public class FileHandler {
      * check that all required files exist
      */
     protected boolean checkFiles() {
-        Message.debug("Attemping to verify files.");
         boolean verified = true;
 
+        Message.debug("Attemping to verify files.");
         try {
             //loop through needed files
             for (String filePath : this.files) {
-                File file = new File(this.context.getFilesDir(), filePath);
+                //create reference
+                File file;
+                if (this.saveToPrivate) {
+                    file = new File(this.context.getFilesDir(), filePath);
+                } else {
+                    file = new File(Environment.getExternalStorageDirectory(), filePath);
+                }
 
                 //check if the current file exists
                 if (!file.exists()) {
@@ -104,6 +151,7 @@ public class FileHandler {
         } catch (Exception e) {
             Message.exception(e.getMessage());
             e.printStackTrace();
+            verified = false;
         }
 
         //show status of method to console
@@ -146,31 +194,23 @@ public class FileHandler {
     } //end of checkData()
 
     /**
-     *
-     * @param filename
-     */
-    protected void write(String filename, String output, boolean overwrite) {
-        //check to overwrite or append data
-        if (overwrite) {
-
-        } else {
-
-        }
-    }
-
-    /**
      * Set the configuration settings to a file
      * @param props
      * @param comment
      */
     protected boolean setConfig(Properties props, String comment) {
-        Message.debug("File handler attempting to save the config file.");
         boolean saved = false;
 
-        //reference the config file
-        File config = new File(this.context.getFilesDir(), "src/config.properties");
-
+        Message.debug("File handler attempting to save the config file.");
         try {
+            //reference the config file
+            File config;
+            if (this.saveToPrivate) {
+                config = new File(this.context.getFilesDir(), "src/config.properties");
+            } else {
+                config = new File(Environment.getExternalStorageDirectory(), "src/config.properties");
+            }
+
             FileWriter writer = new FileWriter(config);
             props.store(writer, comment);
             writer.close();
@@ -179,6 +219,7 @@ public class FileHandler {
             //catch exception
             Message.exception(e.getMessage());
             e.printStackTrace();
+            saved = false;
         }
 
         //show status of method to console
@@ -192,13 +233,18 @@ public class FileHandler {
      * @return Properties
      */
     protected Properties getConfig() {
-        Message.debug("Attempting to read from the config file.");
-
-        //reference the config file
-        File config = new File(this.context.getFilesDir(), "src/config.properties");
         Properties props = new Properties();
 
+        Message.debug("Attempting to read from the config file.");
         try {
+            //reference the config file
+            File config;
+            if (this.saveToPrivate) {
+                config = new File(this.context.getFilesDir(), "src/config.properties");
+            } else {
+                config = new File(Environment.getExternalStorageDirectory(), "src/config.properties");
+            }
+
             //attempt to load properties
             FileReader reader = new FileReader(config);
             props.load(reader);
@@ -219,14 +265,20 @@ public class FileHandler {
      * @return Properties
      */
     protected ArrayList<Entry> getEntryFile() {
-        Message.debug("Attempting to read from the config file.");
-
-        //reference the entries file
         ArrayList<Entry> entries = new ArrayList<Entry>();
 
+        Message.debug("Attempting to read from the config file.");
         try {
+            //reference entries file
+            File entryFile;
+            if (this.saveToPrivate) {
+                entryFile = new File (this.context.getFilesDir(), "src/entries.dat");
+            } else {
+                entryFile = new File (Environment.getExternalStorageDirectory(), "src/entries.dat");
+            }
+
             //attempt to load properties
-            FileInputStream fis = new FileInputStream( new File (this.context.getFilesDir(), "src/entries.dat"));
+            FileInputStream fis = new FileInputStream(entryFile);
             ObjectInputStream ois = new ObjectInputStream(fis);
             entries = (ArrayList<Entry>)ois.readObject();
             ois.close();
@@ -238,6 +290,7 @@ public class FileHandler {
             e.printStackTrace();
             Message.error("File handler failed to read from the config file.");
         }
+
         return entries;
     } //end of getEntryFile()
 
@@ -246,23 +299,34 @@ public class FileHandler {
      * @return Properties
      */
     protected boolean setEntryFile(ArrayList<Entry> entries) {
-        Message.debug("Attempting to read from the config file.");
         boolean saved = false;
 
+        Message.debug("Attempting to read from the config file.");
         try {
+            //reference entries file
+            File entryFile;
+            if (this.saveToPrivate) {
+                entryFile = new File(this.context.getFilesDir(), "src/entries.dat");
+            } else {
+                entryFile = new File(Environment.getExternalStorageDirectory(), "src/entries.dat");
+            }
+
             //attempt to load properties
-            FileOutputStream fos = new FileOutputStream(new File(this.context.getFilesDir(), "src/entries.dat"));
+            FileOutputStream fos = new FileOutputStream(entryFile);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(entries);
             oos.close();
             fos.close();
             Message.success("File handler successfully read from the config file.");
+            saved = true;
         } catch (Exception e) {
             //catch exceptions
             Message.exception(e.getMessage());
             e.printStackTrace();
             Message.error("File handler failed to read from the config file.");
+            saved = false;
         }
+
         return saved;
     } //end of getEntryFile()
 

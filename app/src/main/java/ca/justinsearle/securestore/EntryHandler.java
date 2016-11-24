@@ -63,7 +63,13 @@ public class EntryHandler extends FileHandler {
         return this.entries;
     } //end of viewEntries()
 
+    public void newEntry () {
 
+        Entry entry = new Entry();
+        entry.setup(this.nextId(), "Test", "testerino", "My test account");
+        this.entries.add(entry);
+        super.setEntryFile(this.entries);
+    }
 
     public String getMasterPassword() {
         for (int i = 0; i < this.entries.size(); i++) {
@@ -72,6 +78,14 @@ public class EntryHandler extends FileHandler {
             }
         }
         return "";
+    }
+
+    public int nextId() {
+        int nextInt = 0;
+
+        nextInt = this.entries.size() + 1;
+
+        return nextInt;
     }
 
     /**
