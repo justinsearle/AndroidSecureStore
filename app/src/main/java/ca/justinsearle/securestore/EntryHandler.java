@@ -56,6 +56,14 @@ public class EntryHandler extends FileHandler {
         }
     } //end of viewEntries()
 
+    /**
+     * Get all the entries
+     */
+    public ArrayList<Entry> getEntries() {
+        return this.entries;
+    } //end of viewEntries()
+
+
 
     public String getMasterPassword() {
         for (int i = 0; i < this.entries.size(); i++) {
