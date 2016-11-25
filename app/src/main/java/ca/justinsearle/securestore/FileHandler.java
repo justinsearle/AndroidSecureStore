@@ -287,6 +287,18 @@ class FileHandler {
         return entries;
     } //end of getEntryFile()
 
+    protected static void writeToLog(String msg) {
+        try {
+            File root = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/log.txt");
+            FileWriter writer = new FileWriter(root);
+            writer.append(msg);
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Read the current configuration settings from a file
      * @return Properties
