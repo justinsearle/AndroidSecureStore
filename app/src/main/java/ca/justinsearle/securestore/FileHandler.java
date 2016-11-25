@@ -35,8 +35,8 @@ class FileHandler {
      * just add to this array of strings and it will create on load of the app
      */
     private final String[] directories = {
-            "backup/",
-            "src/"
+            "/SecureStore/backup/",
+            "/SecureStore/src/"
     };
     private final String[] files = {
             "src/entries.dat",
@@ -63,7 +63,9 @@ class FileHandler {
         this.context = context;
     } //end of constructor
 
-    public static void verifyStoragePermissions(Activity activity) {
+    public boolean verifyStoragePermissions(Activity activity) {
+        boolean verified = true;
+
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -74,7 +76,11 @@ class FileHandler {
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
+
+            verified = false;
         }
+
+        return verified;
     }
 
     /**
@@ -98,7 +104,7 @@ class FileHandler {
                 //check if directory exists
                 if (!directory.exists()) {
                     //attempt to create directory
-                    if (directory.mkdir()) {
+                    if (directory.mkdirs()) {
                         Message.success("Created directory \"" + directory.getAbsolutePath() + "\".");
                     } else {
                         Message.error("Failed to create directory \"" + directory.getAbsolutePath() + "\".");
@@ -329,5 +335,12 @@ class FileHandler {
 
         return saved;
     } //end of getEntryFile()
+
+    public void deleteAllFiles() {
+        File entryFile = new File(Environment.getExternalStorageDirectory(), "src/entries.dat");
+        File configFile = new File(Environment.getExternalStorageDirectory(), "src/config.properties");
+        entryFile.delete();
+        configFile.delete();
+    }
 
 } //end of FileHandler class

@@ -69,8 +69,14 @@ public class Splash extends AppCompatActivity {
 
         //start a new file handler class instance
         FileHandler fh = new FileHandler(this);
+        fh.deleteAllFiles();
 
-        fh.verifyStoragePermissions(this);
+        //asking permission to store externally
+        this.txtLoading.setText("Verifying permissions...");
+        if (!fh.verifyStoragePermissions(this)) {
+            this.txtLoading.setText("Could not verify directories.");
+            this.destroy();
+        }
 
         //verify files and directories exists
         this.txtLoading.setText("Verifying directories...");

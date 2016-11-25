@@ -6,7 +6,16 @@ package ca.justinsearle.securestore;
 
 public class Entry implements java.io.Serializable {
 
-    private static final int masterId = 999;
+    //Constants to map to properties
+    private static final int MASTER_ID = 999;
+    private static final int ENTRY_ID = 1;
+    private static final int ENTRY_NAME = 2;
+    private static final int ENTRY_DESCRIPTION = 3;
+    private static final int ENTRY_USERNAME = 4;
+    private static final int ENTRY_PASSWORD = 5;
+    private static final long serialVersionUID = -2167785672176537950L;
+
+    //Entry main properties
     private int entryID;
     private int passwordLength;
     private String entryName;
@@ -30,6 +39,11 @@ public class Entry implements java.io.Serializable {
 
     }
 
+    protected String getProperty (int asd) {
+
+        return "";
+    }
+
     public String getName() {
         return this.entryName;
     }
@@ -39,9 +53,9 @@ public class Entry implements java.io.Serializable {
     }
 
     public void setup(int id, String name, String password, String description) {
-        if (id == this.masterId) {
+        if (id == this.MASTER_ID) {
             this.isMaster = true;
-            this.entryID = this.masterId;
+            this.entryID = this.MASTER_ID;
         } else {
             this.entryID = id;
         }
@@ -55,7 +69,7 @@ public class Entry implements java.io.Serializable {
     }
 
     public static int getMasterId() {
-        return masterId;
+        return MASTER_ID;
     }
 
     public int getId() {

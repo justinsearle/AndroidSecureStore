@@ -25,8 +25,8 @@ class EntryAdapter extends ArrayAdapter<Entry> {
         View customView = listViewEntries.inflate(R.layout.entry, parent, false);
 
         Entry entry = getItem(position);
-        TextView txtName = (TextView) customView.findViewById(R.id.txtName);
-        TextView txtDescription = (TextView) customView.findViewById(R.id.txtDescription);
+        TextView txtName = (TextView) customView.findViewById(R.id.txtEntryName);
+        TextView txtDescription = (TextView) customView.findViewById(R.id.txtEntryDescription);
 
         txtName.setText(entry.getName());
         txtDescription.setText(entry.getPassword());

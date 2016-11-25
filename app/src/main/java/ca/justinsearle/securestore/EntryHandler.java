@@ -94,7 +94,7 @@ public class EntryHandler extends FileHandler {
      */
     protected void setMaster(String password) {
         Entry newEntry = new Entry();
-        newEntry.setup(999, "Master Account", password, "");
+        newEntry.setup(Entry.getMasterId(), "Master Account", password, "");
         this.entries.add(newEntry);
         super.setEntryFile(this.entries);
     } //end of setMaster()
