@@ -17,7 +17,7 @@ public class Message {
     private static boolean successMessages = true;
     private static boolean errorMessages = true;
     private static boolean exceptionMessages = true;
-    private static boolean debugMessages = false;
+    private static boolean debugMessages = true;
     private static boolean toastMessages = true;
 
     private Context context;
@@ -89,7 +89,7 @@ public class Message {
      * @param msg
      */
     public static void info(String msg) {
-        if (infoMessages) System.out.println("INFO: "+ msg);
+        if (infoMessages) System.out.println("--INFO-- "+ msg);
     } //end of info()
 
     /**
@@ -97,7 +97,7 @@ public class Message {
      * @param msg
      */
     public static void error(String msg) {
-        if (errorMessages) System.out.println("ERROR: "+ msg);
+        if (errorMessages) System.out.println("--ERROR-- "+ msg);
     } //end of error()
 
     /**
@@ -105,7 +105,7 @@ public class Message {
      * @param msg
      */
     public static void success(String msg) {
-        if (successMessages) System.out.println("SUCCESS: "+ msg);
+        if (successMessages) System.out.println("--SUCCESS-- "+ msg);
     } //end of success()
 
     /**
@@ -113,7 +113,7 @@ public class Message {
      * @param msg
      */
     public static void warning(String msg) {
-        if (warningMessages) System.out.println("WARNING: "+ msg);
+        if (warningMessages) System.out.println("--WARNING-- "+ msg);
     } //end of warning()
 
     /**
@@ -121,7 +121,7 @@ public class Message {
      * @param msg
      */
     public static void exception(String msg) {
-        if (exceptionMessages) System.out.println("CAUGHT EXCEPTION: "+ msg);
+        if (exceptionMessages) System.out.println("--CAUGHT EXCEPTION-- "+ msg);
     } //end of warning()
 
     /**
@@ -129,7 +129,7 @@ public class Message {
      * @param msg
      */
     public static void debug(String msg) {
-        if (debugMessages) System.out.println("DEBUG: "+ msg);
+        if (debugMessages) System.out.println("--DEBUG-- "+ msg);
     } //end of warning()
 
     /**
@@ -138,7 +138,7 @@ public class Message {
      */
     public void toast(String msg) {
         if (toastMessages) {
-            System.out.println("TOAST: "+ msg);
+            System.out.println("--TOAST-- "+ msg);
             Toast.makeText(this.context, msg, Toast.LENGTH_LONG).show();
         }
     } //end of warning()
