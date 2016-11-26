@@ -338,7 +338,8 @@ class FileHandler {
 
     public void deleteAllFiles() {
         File entryFile = new File(Environment.getExternalStorageDirectory(), "src/entries.dat");
-        File configFile = new File(Environment.getExternalStorageDirectory(), "src/config.properties");
+        File configFile = new File(Environment.getExternalStorageDirectory(), "" +
+                "src/config.properties");
         entryFile.delete();
         configFile.delete();
     }
