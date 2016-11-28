@@ -31,12 +31,6 @@ class FileHandler {
     public static final boolean SAVE_TO_PRIVATE = false;
 
     /**
-     * if deleteData = true, all files will be deleted then all directories will be deleted
-     * this will be used in the future in conjunction with user options for security
-     */
-    private boolean deleteData = false;
-
-    /**
      * all the directories and files needed for the application,
      * just add to this array of strings and it will create on load of the app
      */
@@ -71,7 +65,7 @@ class FileHandler {
      * check that all needed directories exist
      */
     protected boolean checkDirectories() {
-        boolean verified = true;
+        int directoriesExist = 0;
 
         Message.debug("Attempting to verify directories.");
         try {
@@ -90,30 +84,35 @@ class FileHandler {
                     //attempt to create directory
                     if (directory.mkdirs()) {
                         Message.success("Created directory \"" + directory.getAbsolutePath() + "\".");
+                        directoriesExist++;
                     } else {
                         Message.error("Failed to create directory \"" + directory.getAbsolutePath() + "\".");
-                        verified = false;
                     }
+                } else {
+                    directoriesExist++;
                 }
 
             } //end of loop
         } catch (Exception e) {
             Message.exception(e.getMessage());
             e.printStackTrace();
-            verified = false;
         }
 
         //show status of method to console
-        if (verified) Message.debug("Verified directories.");
-        else Message.debug("Could not verify directories.");
-        return verified;
+        if (directoriesExist == this.directories.length) {
+            Message.debug("Verified directories.");
+            return true;
+        } else {
+            Message.debug("Could not verify directories.");
+            return false;
+        }
     } //end of checkDirectories()
 
     /**
      * check that all required files exist
      */
     protected boolean checkFiles() {
-        boolean verified = true;
+        int filesExist = 0;
 
         Message.debug("Attempting to verify files.");
         try {
@@ -132,22 +131,27 @@ class FileHandler {
                     //test to see if file was created successfully
                     if (file.createNewFile()) {
                         Message.success("File created: \"" + file.getAbsolutePath() +"\"");
+                        filesExist++;
                     } else {
                         Message.error("Failed to create file: \"" + file.getAbsolutePath() +"\"");
-                        verified = false;
                     }
+                } else {
+                    filesExist++;
                 }
             } //end of loop
         } catch (Exception e) {
             Message.exception(e.getMessage());
             e.printStackTrace();
-            verified = false;
         }
 
         //show status of method to console
-        if (verified) Message.debug("Verified files.");
-        else Message.debug("Could not verify files.");
-        return verified;
+        if (filesExist == this.files.length) {
+            Message.debug("Verified files.");
+            return true;
+        } else {
+            Message.debug("Could not verify files.");
+            return false;
+        }
     } //end of checkFiles()
 
     /**
@@ -161,7 +165,7 @@ class FileHandler {
         Config config = new Config();
 
         //attempt to read values
-        if (!config.read()) {
+        if (!config.read() && config.rebuildIfIncorrect) {
             //if we cannot read attempt to restore from a backup
 //            if (!config.restore()) {
 //                //cannot restore, rebuild config file

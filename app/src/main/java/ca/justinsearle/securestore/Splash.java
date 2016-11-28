@@ -21,15 +21,16 @@ import android.widget.TextView;
 public class Splash extends AppCompatActivity {
 
     private static final int SPLASH_DELAY_LENGTH = 2000;
-    private int mProgressStatus = 0;
     private boolean initialLoad = false;
     private boolean masterLogin = false;
+    private Config config;
+
+    //ui elements
     private ProgressBar mProgress;
     private TextView txtLoading;
     private TextView txtInformation;
     private Button btnNoMasterLogin;
     private Button btnYesMasterLogin;
-    private Config config;
 
     //storage permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -42,6 +43,7 @@ public class Splash extends AppCompatActivity {
     @Override
     /**
      * On creation of the splash activity we want to do the following
+     *  - get storage permissions
      *  - initialize the program by verifying files, directories and data
      *  - read from the config file to decide what to do and where to go
      */
@@ -63,6 +65,8 @@ public class Splash extends AppCompatActivity {
 
         //visually start loading process
         setProgressBar(20);
+        this.txtLoading.setText(getString(R.string.splash_loading));
+        Message.info(getString(R.string.splash_loading));
 
         //start loading data after x amount of time
         new Handler().postDelayed(new Runnable() {
@@ -77,35 +81,32 @@ public class Splash extends AppCompatActivity {
      * Verify files, directores and data along with settings up anything needed for the splash screen
      */
     private void initialize() {
-        Message.info("Starting program.");
-
-        //start a new file handler class instance
-        FileHandler fh = new FileHandler(this);
-
         //asking permission to store externally
-        this.txtLoading.setText("Verifying storage permissions...");
         if (verifyStoragePermissions(this)) {
 
+            //start a new file handler class instance
+            FileHandler fh = new FileHandler(this);
+
             //verify files and directories exists
-            this.txtLoading.setText("Verifying directories...");
+            this.txtLoading.setText(getString(R.string.splash_verify_directories));
             if (!fh.checkDirectories()) {
-                this.txtLoading.setText("Could not verify directories.");
+                this.txtLoading.setText(getString(R.string.splash_verify_directories_failed));
                 destroy();
             }
             setProgressBar(40);
 
             //verify files exists
-            this.txtLoading.setText("Verifying files...");
+            this.txtLoading.setText(getString(R.string.splash_verify_files));
             if (!fh.checkFiles()) {
-                this.txtLoading.setText("Could not verify files.");
+                this.txtLoading.setText(getString(R.string.splash_verify_files_failed));
                 destroy();
             }
             setProgressBar(60);
 
             //verify data is valid
-            this.txtLoading.setText("Verifying data...");
+            this.txtLoading.setText(getString(R.string.splash_verify_data));
             if (!fh.checkData()) {
-                this.txtLoading.setText("Could not verify data.");
+                this.txtLoading.setText(getString(R.string.splash_verify_data_failed));
                 destroy();
             }
             setProgressBar(80);
@@ -113,7 +114,7 @@ public class Splash extends AppCompatActivity {
             /**
              * read settings
              */
-            this.txtLoading.setText("Loading settings...");
+            this.txtLoading.setText(getString(R.string.splash_read_settings));
 
             //load config
             this.config = new Config(this);
@@ -123,14 +124,15 @@ public class Splash extends AppCompatActivity {
             //get splash settings
             this.initialLoad = (this.config.getProperty("initial_load").equals("true") ? true : false);
             this.masterLogin = (this.config.getProperty("master_login").equals("true") ? true : false);
-            setProgressBar(100);
 
             //setup event listeners
-            Splash.this.eventListeners();
+            eventListeners();
 
             //decide path to be taken programmatically
             if (this.initialLoad) {
                 //this is the initial load of the app
+                setProgressBar(90);
+
                 this.txtLoading.setText(getString(R.string.initial_load_header));
                 this.txtInformation.setText(getString(R.string.initial_load_message));
                 this.btnNoMasterLogin.setVisibility(View.VISIBLE);
@@ -138,14 +140,18 @@ public class Splash extends AppCompatActivity {
                 this.txtInformation.setVisibility(View.VISIBLE);
             } else if (this.masterLogin) {
                 //master login screen
+                setProgressBar(100);
+
                 Intent mainIntent = new Intent(Splash.this, Login.class);
-                Splash.this.startActivity(mainIntent);
-                Splash.this.destroy();
+                startActivity(mainIntent);
+                destroy();
             } else {
                 //right to main activity
+                setProgressBar(100);
+
                 Intent mainIntent = new Intent(Splash.this, MainActivity.class);
-                Splash.this.startActivity(mainIntent);
-                this.destroy();
+                startActivity(mainIntent);
+                destroy();
             }
         }
     } //end of initialize()
@@ -169,8 +175,9 @@ public class Splash extends AppCompatActivity {
                     Splash.this.config.build(false);
 
                     //move to the main activity screen
+                    setProgressBar(100);
                     Intent mainIntent = new Intent(Splash.this, MainActivity.class);
-                    Splash.this.startActivity(mainIntent);
+                    startActivity(mainIntent);
                     Splash.this.destroy();
                 }
             });
@@ -184,8 +191,9 @@ public class Splash extends AppCompatActivity {
                     Splash.this.config.build(false);
 
                     //movie to the login screen
+                    setProgressBar(100);
                     Intent mainIntent = new Intent(Splash.this, Login.class);
-                    Splash.this.startActivity(mainIntent);
+                    startActivity(mainIntent);
                     Splash.this.destroy();
                 }
             });
@@ -197,8 +205,7 @@ public class Splash extends AppCompatActivity {
      * @param progressStatus
      */
     public void setProgressBar(int progressStatus) {
-        this.mProgressStatus = progressStatus;
-        this.mProgress.setProgress(this.mProgressStatus);
+        this.mProgress.setProgress(progressStatus);
     } //end of setProgressBar()
 
     /**
@@ -209,6 +216,8 @@ public class Splash extends AppCompatActivity {
     private boolean verifyStoragePermissions(Activity activity) {
         boolean verified = false;
 
+        this.txtLoading.setText(getString(R.string.splash_verify_permissions));
+
         //only ask for permissions if we are saving to external storage
         if (FileHandler.SAVE_TO_PRIVATE) {
             verified = true;
@@ -216,7 +225,9 @@ public class Splash extends AppCompatActivity {
             // Check if we have write permission
             int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
             if (permission != PackageManager.PERMISSION_GRANTED) {
+
                 // We don't have permission so prompt the user
+                this.txtLoading.setText(getString(R.string.splash_get_permissions));
                 ActivityCompat.requestPermissions(
                         activity,
                         PERMISSIONS_STORAGE,
@@ -243,18 +254,21 @@ public class Splash extends AppCompatActivity {
             // Check if the only required permission has been granted
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 // Storage permission has been granted
-                this.initialize();
+                initialize();
             } else {
                 //user denied permission
-                this.txtLoading.setText("Failed to get permission, cannot continue.");
-                this.destroy();
+                Message.debug("Failed to get permission, cannot continue.");
+                destroy();
             }
         } else {
             //super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            this.initialize();
+            initialize();
         }
     } //end of onRequestPermissionsResult()
 
+    /**
+     * destroy the activity
+     */
     private void destroy() {
         this.finish();
     } //end of destroy()

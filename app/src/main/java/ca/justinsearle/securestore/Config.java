@@ -12,9 +12,10 @@ import java.util.Properties;
 
 public class Config extends FileHandler {
 
-    public Properties props = new Properties();
+    private Properties props = new Properties();
     private List<ArrayPair> defaultConfigurations;
     private boolean hasRead = false;
+    public static boolean rebuildIfIncorrect = true;
 
     /**
      * Basic constructor
@@ -56,10 +57,8 @@ public class Config extends FileHandler {
      * @return
      */
     public boolean read() {
-        Message.debug("Config class attempting to process properties.");
         this.hasRead = true;
-
-        boolean readOkay = true;
+        int readProperties = 0;
 
         //get file configurations
         Properties fileProps = super.getConfig();
@@ -76,17 +75,21 @@ public class Config extends FileHandler {
             if (fileValue != null) {
                 //property found, verify that we have valid data
                 this.props.setProperty( key, fileValue );
+                readProperties++;
             } else {
                 //property not found, load default property
                 Message.warning("Property: " + key + " was not found in the loaded config file.");
                 this.props.setProperty(key, defaultValue);
-                readOkay = false;
             }
         } //end of loop
 
-        if (readOkay) Message.debug("Config file loaded correctly!");
-        else Message.debug("Config file may have not loaded correctly");
-        return readOkay;
+        if (readProperties == this.defaultConfigurations.size()) {
+            Message.debug("Config file loaded correctly!");
+            return true;
+        } else {
+            Message.debug("Config file may have not loaded correctly");
+            return false;
+        }
     } //end of read()
 
     /**

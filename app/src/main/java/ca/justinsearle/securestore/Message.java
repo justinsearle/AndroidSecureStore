@@ -10,7 +10,7 @@ import android.widget.Toast;
 class Message {
 
     private static boolean backlogMessages;
-    private static boolean logMessages = true;
+    private static boolean logMessages = false;
     private static boolean generalMessages = true;
     private static boolean infoMessages = true;
     private static boolean warningMessages = true;

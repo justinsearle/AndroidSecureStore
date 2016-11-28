@@ -1,5 +1,17 @@
 <resources>
     <string name="app_name">Secure Store</string>
+
+    <string name="splash_loading">Starting the application.</string>
+    <string name="splash_get_permissions">Getting storage permissions.</string>
+    <string name="splash_verify_permissions">Verifying storage permissions.</string>
+    <string name="splash_verify_directories">Verifying directories exist.</string>
+    <string name="splash_verify_directories_failed">SecureStore could not validate directories.</string>
+    <string name="splash_verify_files">Verifying files exist.</string>
+    <string name="splash_verify_files_failed">SecureStore could not validate files.</string>
+    <string name="splash_verify_data">Verifying data.</string>
+    <string name="splash_verify_data_failed">SecureStore could not validate the data.</string>
+    <string name="splash_read_settings">Reading settings.</string>
+
     <string name="login_header">Secure Store Login</string>
     <string name="login_message">Login with your master password to review your secure store entries.</string>
     <string name="login_message_setup">Create a master password to access your information.</string>

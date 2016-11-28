@@ -16,4 +16,14 @@ public class ArrayPair {
         this.svalue = value;
         this.type = type;
     }
+
+    public ArrayPair(String key, int value, String type){
+        this.key = key;
+        this.ivalue = value;
+        this.type = type;
+    }
+
+    public String getType() {
+        return this.type;
+    }
 }
