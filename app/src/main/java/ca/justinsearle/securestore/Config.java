@@ -21,10 +21,10 @@ public class Config extends FileHandler {
      */
     public Config() {
         loadDefaults();
-    } //end of Constructor
+    }
 
     /**
-     * constructor with context
+     * constructor with override
      * @param context
      */
     public Config(Context context) {

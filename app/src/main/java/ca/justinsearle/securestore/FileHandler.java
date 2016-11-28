@@ -28,59 +28,43 @@ class FileHandler {
      * if saveToPrivate = true, the application will save to private storage
      * else the application will save to sd card, mostly used for debugging
      */
-    private static final boolean saveToPrivate = false;
+    public static final boolean SAVE_TO_PRIVATE = false;
+
+    /**
+     * if deleteData = true, all files will be deleted then all directories will be deleted
+     * this will be used in the future in conjunction with user options for security
+     */
+    private boolean deleteData = false;
 
     /**
      * all the directories and files needed for the application,
      * just add to this array of strings and it will create on load of the app
      */
-    private final String[] directories = {
+    private static final String[] directories = {
+            "/SecureStore/",
             "/SecureStore/backup/",
             "/SecureStore/src/"
     };
-    private final String[] files = {
-            "src/entries.dat",
-            "src/config.properties",
-            "src/log.txt"
+    private static final String[] files = {
+            "/SecureStore/src/entries.dat",
+            "/SecureStore/src/config.properties",
+            "/SecureStore/src/log.txt"
     };
 
+    //store a reference of the context
     private Context context;
 
-    // Storage Permissions
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+    /**
+     * Constructor
+     */
+    public FileHandler() {}
 
     /**
-     * Constructors
+     * Constructor override
+     * @param context
      */
-    public FileHandler() {
-    }
-
     public FileHandler(Context context) {
         this.context = context;
-    } //end of constructor
-
-    public boolean verifyStoragePermissions(Activity activity) {
-        boolean verified = true;
-
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE
-            );
-
-            verified = false;
-        }
-
-        return verified;
     }
 
     /**
@@ -95,7 +79,7 @@ class FileHandler {
             for (String dir : this.directories) {
                 //create reference
                 File directory;
-                if (this.saveToPrivate) {
+                if (SAVE_TO_PRIVATE) {
                     directory = new File(this.context.getFilesDir(), dir);
                 } else {
                     directory = new File(Environment.getExternalStorageDirectory(), dir);
@@ -131,13 +115,13 @@ class FileHandler {
     protected boolean checkFiles() {
         boolean verified = true;
 
-        Message.debug("Attemping to verify files.");
+        Message.debug("Attempting to verify files.");
         try {
             //loop through needed files
             for (String filePath : this.files) {
                 //create reference
                 File file;
-                if (this.saveToPrivate) {
+                if (SAVE_TO_PRIVATE) {
                     file = new File(this.context.getFilesDir(), filePath);
                 } else {
                     file = new File(Environment.getExternalStorageDirectory(), filePath);
@@ -186,12 +170,12 @@ class FileHandler {
         }
 
         //open entries file
-        EntryHandler entryHandler = new EntryHandler();
+        //EntryHandler entryHandler = new EntryHandler();
 
         //attempt to read values
-        if (!entryHandler.read()) {
+        //if (!entryHandler.read()) {
 
-        }
+        //}
 
         //show status of method to console
         if (verified) Message.debug("Verified data.");
@@ -211,10 +195,10 @@ class FileHandler {
         try {
             //reference the config file
             File config;
-            if (this.saveToPrivate) {
-                config = new File(this.context.getFilesDir(), "src/config.properties");
+            if (SAVE_TO_PRIVATE) {
+                config = new File(this.context.getFilesDir(), "/SecureStore/src/config.properties");
             } else {
-                config = new File(Environment.getExternalStorageDirectory(), "src/config.properties");
+                config = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/config.properties");
             }
 
             FileWriter writer = new FileWriter(config);
@@ -245,10 +229,10 @@ class FileHandler {
         try {
             //reference the config file
             File config;
-            if (this.saveToPrivate) {
-                config = new File(this.context.getFilesDir(), "src/config.properties");
+            if (SAVE_TO_PRIVATE) {
+                config = new File(this.context.getFilesDir(), "/SecureStore/src/config.properties");
             } else {
-                config = new File(Environment.getExternalStorageDirectory(), "src/config.properties");
+                config = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/config.properties");
             }
 
             //attempt to load properties
@@ -277,10 +261,10 @@ class FileHandler {
         try {
             //reference entries file
             File entryFile;
-            if (this.saveToPrivate) {
-                entryFile = new File (this.context.getFilesDir(), "src/entries.dat");
+            if (SAVE_TO_PRIVATE) {
+                entryFile = new File (this.context.getFilesDir(), "/SecureStore/src/entries.dat");
             } else {
-                entryFile = new File (Environment.getExternalStorageDirectory(), "src/entries.dat");
+                entryFile = new File (Environment.getExternalStorageDirectory(), "/SecureStore/src/entries.dat");
             }
 
             //attempt to load properties
@@ -300,6 +284,18 @@ class FileHandler {
         return entries;
     } //end of getEntryFile()
 
+    protected static void writeToLog(String msg) {
+        try {
+            File root = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/log.txt");
+            FileWriter writer = new FileWriter(root);
+            writer.append(msg);
+            writer.flush();
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Read the current configuration settings from a file
      * @return Properties
@@ -311,10 +307,10 @@ class FileHandler {
         try {
             //reference entries file
             File entryFile;
-            if (this.saveToPrivate) {
-                entryFile = new File(this.context.getFilesDir(), "src/entries.dat");
+            if (SAVE_TO_PRIVATE) {
+                entryFile = new File(this.context.getFilesDir(), "/SecureStore/src/entries.dat");
             } else {
-                entryFile = new File(Environment.getExternalStorageDirectory(), "src/entries.dat");
+                entryFile = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/entries.dat");
             }
 
             //attempt to load properties
@@ -334,14 +330,37 @@ class FileHandler {
         }
 
         return saved;
-    } //end of getEntryFile()
+    }
 
-    public void deleteAllFiles() {
-        File entryFile = new File(Environment.getExternalStorageDirectory(), "src/entries.dat");
-        File configFile = new File(Environment.getExternalStorageDirectory(), "" +
-                "src/config.properties");
-        entryFile.delete();
-        configFile.delete();
+    /**
+     * Deletes any files and directories created by the application
+     */
+    private void deleteAllFiles() {
+        //loop through and delete all files
+        for (String file : this.files) {
+            Message.debug("Deleting file: " + file);
+
+            //create reference to private storage
+            File privateFile = new File(this.context.getFilesDir(), file);
+            if (privateFile.exists()) privateFile.delete();
+
+            //create reference to public storage
+            File publicFile = new File(Environment.getExternalStorageDirectory(), file);
+            if (publicFile.exists()) publicFile.delete();
+        }
+
+        //loop through and delete all directories
+        for (String dir : this.directories) {
+            Message.debug("Deleting directory: " + dir);
+
+            //create reference to private storage
+            File privateDirectory = new File(this.context.getFilesDir(), dir);
+            if (privateDirectory.exists()) privateDirectory.delete();
+
+            //create reference to public storage
+            File publicDirectory = new File(Environment.getExternalStorageDirectory(), dir);
+            if (publicDirectory.exists()) publicDirectory.delete();
+        }
     }
 
 } //end of FileHandler class
