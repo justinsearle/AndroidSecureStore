@@ -3,6 +3,7 @@ package ca.justinsearle.securestore;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Admin on 11/15/2016.
@@ -63,10 +64,12 @@ public class EntryHandler extends FileHandler {
         return this.entries;
     } //end of viewEntries()
 
-    public void newEntry () {
-
+    public void newEntry (String entryName, String entryPassword, String entryDescription) {
+        //create new entry
         Entry entry = new Entry();
-        entry.setup(this.nextId(), "Test", "testerino", "My test account");
+        entry.setup(nextId(), entryName, entryPassword, entryDescription);
+
+        //add entry to list and update file
         this.entries.add(entry);
         super.setEntryFile(this.entries);
     }
@@ -81,9 +84,17 @@ public class EntryHandler extends FileHandler {
     }
 
     public int nextId() {
-        int nextInt = 0;
+        int nextInt = 1;
+        List idList = new ArrayList<Integer>();
 
-        nextInt = this.entries.size() + 1;
+        for (Entry entry : this.entries) {
+            int tempId = entry.getId();
+            idList.add(tempId);
+
+            if (tempId == nextInt) {
+                nextInt++;
+            }
+        }
 
         return nextInt;
     }
@@ -93,8 +104,11 @@ public class EntryHandler extends FileHandler {
      * @param password
      */
     protected void setMaster(String password) {
+        //setup master account
         Entry newEntry = new Entry();
-        newEntry.setup(Entry.getMasterId(), "Master Account", password, "");
+        newEntry.setup(Entry.getMasterId(), "Master Account", password, "This is your login information for the application");
+
+        //save file
         this.entries.add(newEntry);
         super.setEntryFile(this.entries);
     } //end of setMaster()

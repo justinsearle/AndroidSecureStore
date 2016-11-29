@@ -27,9 +27,12 @@ class EntryAdapter extends ArrayAdapter<Entry> {
         Entry entry = getItem(position);
         TextView txtName = (TextView) customView.findViewById(R.id.txtEntryName);
         TextView txtDescription = (TextView) customView.findViewById(R.id.txtEntryDescription);
+        TextView txtID = (TextView) customView.findViewById(R.id.txtID);
 
         txtName.setText(entry.getName());
-        txtDescription.setText(entry.getPassword());
+        txtDescription.setText(entry.getDescription());
+        txtID.setText(Integer.toString(entry.getId()));
+
         return customView;
     }
 }

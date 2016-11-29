@@ -15,7 +15,6 @@ public class Config extends FileHandler {
     private Properties props = new Properties();
     private List<ArrayPair> defaultConfigurations;
     private boolean hasRead = false;
-    public static boolean rebuildIfIncorrect = true;
 
     /**
      * Basic constructor

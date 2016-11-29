@@ -55,10 +55,8 @@ public class Entry implements java.io.Serializable {
     public void setup(int id, String name, String password, String description) {
         if (id == this.MASTER_ID) {
             this.isMaster = true;
-            this.entryID = this.MASTER_ID;
-        } else {
-            this.entryID = id;
         }
+        this.entryID = id;
         this.entryName = name;
         this.password = password;
         this.entryDescription = description;
@@ -67,6 +65,8 @@ public class Entry implements java.io.Serializable {
     public void getConstant(String master) {
 
     }
+
+    public String getDescription() { return this.entryDescription; }
 
     public static int getMasterId() {
         return MASTER_ID;

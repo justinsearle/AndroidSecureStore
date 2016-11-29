@@ -165,12 +165,12 @@ class FileHandler {
         Config config = new Config();
 
         //attempt to read values
-        if (!config.read() && config.rebuildIfIncorrect) {
+        if (!config.read()) {
             //if we cannot read attempt to restore from a backup
-//            if (!config.restore()) {
-//                //cannot restore, rebuild config file
+            if (!config.restore()) {
+                //cannot restore, rebuild config file
                 config.build(true);
-//            }
+            }
         }
 
         //open entries file
@@ -194,18 +194,19 @@ class FileHandler {
      */
     protected boolean setConfig(Properties props, String comment) {
         boolean saved = false;
+        final String configFilePath = "/SecureStore/src/config.properties";
 
         Message.debug("File handler attempting to save the config file.");
         try {
             //reference the config file
-            File config;
+            File configFile;
             if (SAVE_TO_PRIVATE) {
-                config = new File(this.context.getFilesDir(), "/SecureStore/src/config.properties");
+                configFile = new File(this.context.getFilesDir(), configFilePath);
             } else {
-                config = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/config.properties");
+                configFile = new File(Environment.getExternalStorageDirectory(), configFilePath);
             }
 
-            FileWriter writer = new FileWriter(config);
+            FileWriter writer = new FileWriter(configFile);
             props.store(writer, comment);
             writer.close();
             saved = true;
@@ -213,7 +214,6 @@ class FileHandler {
             //catch exception
             Message.exception(e.getMessage());
             e.printStackTrace();
-            saved = false;
         }
 
         //show status of method to console
@@ -228,19 +228,20 @@ class FileHandler {
      */
     protected Properties getConfig() {
         Properties props = new Properties();
+        final String configFilePath = "/SecureStore/src/config.properties";
 
         Message.debug("Attempting to read from the config file.");
         try {
             //reference the config file
-            File config;
+            File configFile;
             if (SAVE_TO_PRIVATE) {
-                config = new File(this.context.getFilesDir(), "/SecureStore/src/config.properties");
+                configFile = new File(this.context.getFilesDir(), configFilePath);
             } else {
-                config = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/config.properties");
+                configFile = new File(Environment.getExternalStorageDirectory(), configFilePath);
             }
 
             //attempt to load properties
-            FileReader reader = new FileReader(config);
+            FileReader reader = new FileReader(configFile);
             props.load(reader);
             reader.close();
             Message.success("File handler successfully read from the config file.");
@@ -260,15 +261,16 @@ class FileHandler {
      */
     protected ArrayList<Entry> getEntryFile() {
         ArrayList<Entry> entries = new ArrayList<Entry>();
+        final String entryFilePath = "/SecureStore/src/entries.dat";
 
         Message.debug("Attempting to read from the config file.");
         try {
             //reference entries file
             File entryFile;
             if (SAVE_TO_PRIVATE) {
-                entryFile = new File (this.context.getFilesDir(), "/SecureStore/src/entries.dat");
+                entryFile = new File (this.context.getFilesDir(), entryFilePath);
             } else {
-                entryFile = new File (Environment.getExternalStorageDirectory(), "/SecureStore/src/entries.dat");
+                entryFile = new File (Environment.getExternalStorageDirectory(), entryFilePath);
             }
 
             //attempt to load properties
@@ -306,15 +308,16 @@ class FileHandler {
      */
     protected boolean setEntryFile(ArrayList<Entry> entries) {
         boolean saved = false;
+        final String entryFilePath = "/SecureStore/src/entries.dat";
 
         Message.debug("Attempting to read from the config file.");
         try {
             //reference entries file
             File entryFile;
             if (SAVE_TO_PRIVATE) {
-                entryFile = new File(this.context.getFilesDir(), "/SecureStore/src/entries.dat");
+                entryFile = new File(this.context.getFilesDir(), entryFilePath);
             } else {
-                entryFile = new File(Environment.getExternalStorageDirectory(), "/SecureStore/src/entries.dat");
+                entryFile = new File(Environment.getExternalStorageDirectory(), entryFilePath);
             }
 
             //attempt to load properties

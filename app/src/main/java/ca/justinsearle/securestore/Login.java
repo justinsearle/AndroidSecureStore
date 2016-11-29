@@ -33,7 +33,7 @@ public class Login extends AppCompatActivity {
         this.editLoginPass = (EditText) findViewById(R.id.txtPass);
 
         //initialize the application
-        this.initialize();
+        initialize();
     } //end of onCreate()
 
     /**
@@ -42,7 +42,7 @@ public class Login extends AppCompatActivity {
     private void initialize() {
         //read all settings needed for the login activity
         this.config = new Config();
-        config.read();
+        this.config.read();
         this.initialLoad = (config.getProperty("initial_load").equals("true") ? true : false);
 
         //if initial load,
@@ -53,7 +53,7 @@ public class Login extends AppCompatActivity {
         }
 
         //setup event listeners
-        this.eventListeners();
+        eventListeners();
     } //end of initialize()
 
     /**

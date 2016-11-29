@@ -11,18 +11,30 @@
         android:layout_alignStart="@+id/txtEntryName"
         android:layout_marginTop="15dp"
         android:id="@+id/txtEntryDescription"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:layout_marginBottom="15dp" />
+
+    <TextView
+        android:text="234234"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtID"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:text="Entry Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
         android:id="@+id/txtEntryName"
         android:textSize="18sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="15dp" />
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_alignBottom="@+id/txtID"
+        android:layout_toRightOf="@+id/txtID"
+        android:layout_toEndOf="@+id/txtID" />
 </RelativeLayout>

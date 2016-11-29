@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
         EntryHandler entryHandler = new EntryHandler(this);
         entryHandler.read();
+        //entryHandler.newEntry("Test account", "fakepass", "Fake test account");
 
         String[] cars = {"dodge", "ford", "nissan"};
         ListAdapter adapter = new EntryAdapter(this, entryHandler.getEntries());
