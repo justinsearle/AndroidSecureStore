@@ -20,6 +20,10 @@ class EntryAdapter extends ArrayAdapter<Entry> {
         super(context, R.layout.entry, entries);
     }
 
+    public void updateData() {
+        super.notifyDataSetChanged();
+    }
+
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater listViewEntries = LayoutInflater.from(getContext());
         View customView = listViewEntries.inflate(R.layout.entry, parent, false);
@@ -34,5 +38,10 @@ class EntryAdapter extends ArrayAdapter<Entry> {
         txtID.setText(Integer.toString(entry.getId()));
 
         return customView;
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
     }
 }
